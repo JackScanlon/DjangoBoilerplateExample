@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %} Django Boilerplate - {% trans "Home" %} {% endblock title %}
+
+{% block content %}
+  <main class="page-content">
+    <header>
+      <h1>Dockerised Django Boilerplate</h1>
+      {% include "pages/_links.html" %}
+
+      {% if user.is_authenticated %}
+        <section class="logged-in">
+          <h4>{% trans "Nice, you're logged in! ❤️" %}</h4>
+        </section>
+      {% endif %}
+    </header>
+    <section class="content">
+      <h3>{% trans "Featuring... 🚀" %}</h3>
+      <ul class="features" id="packages">
+        <li>Django AllAuth</li>
+        <li>Django SASS Processor</li>
+      </ul>
+      <ul class="features" id="services">
+        <li>ElasticSearch</li>
+        <li>Celery</li>
+        <li>Redis</li>
+        <li>PostgreSQL</li>
+        <li>Nginx</li>
+      </ul>
+    </section>
+  </main>
+{% endblock content %}

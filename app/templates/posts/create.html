@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+{% load static %}
+{% load i18n %}
+
+{% block title %} Django Boilerplate - {% trans "Create Post" %} {% endblock title %}
+
+{% block content %}
+  <script type="text/javascript" src="{% static "js/utils.js" %}"></script>
+  <script type="text/javascript">
+    const renderResponse = (data) => {
+      const elem = document.querySelector('#created-item');
+      if (data.created) {
+        elem.classList.remove('hide');
+        return;
+      }
+
+      elem.classList.add('hide');
+    }
+
+    const submitPost = () => {
+      const postTitle = document.querySelector('#post-title');
+      const postContent = document.querySelector('#post-content');
+
+      const csrftoken = getCookie('csrftoken');
+      const data = JSON.stringify({
+        title: postTitle.value,
+        content: postContent.value
+      });
+
+      fetch('/posts/create/', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': csrftoken,
+          },
+          body: data,
+        })
+        .then(response => {
+          if (!response.ok) {
+            throw Error(response.statusText);
+          }
+
+          return response;
+        })
+        .then(response => response.json())
+        .then(data => {
+          renderResponse(data)
+
+          postTitle.value = postContent.value = '';
+        })
+        .catch(error => console.error(error));
+    }
+
+    domReady.finally(() => {
+      document.querySelector('#create-post').addEventListener('submit', (e) => {
+        e.preventDefault();
+        
+        submitPost();
+      });
+    });
+  </script>
+  <main class="page-content">
+    <header>
+      <h1>Post Creator</h1>
+    </header>
+    <section class="content">
+      <section class="hide" id="created-item">
+        <h4>You just created a post! <a href="/posts/">See Posts</a></h4>
+      </section>
+      <h3>Create a post:</h3>
+      <section class="create-post" id="create-post">
+        <form method="post">
+          <label for="post-title">Post Title: </label>
+          <input id="post-title" type="text" name="post-title" value="">
+          <label for="post-content">Post Content: </label>
+          <textarea id="post-content" type="text" name="post-content"></textarea>
+          <input type="submit" value="Create">
+        </form>
+      </section>
+    </section>
+  </main>
+{% endblock content %}

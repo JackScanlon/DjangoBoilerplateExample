@@ -1,0 +1,92 @@
+
+{% extends "base.html" %}
+{% load static %}
+{% load i18n %}
+
+{% block title %} Django Boilerplate - {% trans "Post Viewer" %} {% endblock title %}
+
+{% block content %}
+  <script type="text/javascript" src="{% static "js/utils.js" %}"></script>
+  <script type="text/javascript">
+    const createPost = ({ title, content, slug }) => {
+      return `
+      <div class="post" id="${slug}">
+        <span class="title">${title}</span>
+        <span class="content">${content}</span>
+      </div>
+      `
+    }
+
+    const renderResults = (data) => {
+      const postview = document.querySelector('#post-grid-view');
+      postview.innerHTML = '';
+
+      if (typeof data.results === 'undefined') {
+        postview.insertAdjacentHTML('beforeend', '<div>No results found!</div>');
+        return;
+      }
+
+      for (let i = 0; i < data.results.length; i++) {
+        postview.insertAdjacentHTML('beforeend', createPost(data.results[i]));
+      }
+    }
+    
+    domReady.finally(() => {      
+      const searchbar = document.querySelector('#query-search');
+      searchbar.addEventListener('keyup', (e) => {
+        if (e.keyCode != 13)
+          return;
+        
+        const csrftoken = getCookie('csrftoken');
+        const data = JSON.stringify({
+          query: searchbar.value,
+        });
+
+        fetch('/posts/', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': csrftoken,
+          },
+          body: data,
+        })
+        .then(response => {
+          if (!response.ok) {
+            throw Error(response.statusText);
+          }
+
+          return response;
+        })
+        .then(response => response.json())
+        .then(data => {
+          renderResults(data);
+        })
+        .catch(error => console.error(error));
+      })
+    });
+  </script>
+  <main class="page-content">
+    <header>
+      <h1>Posts Viewer</h1>
+    </header>
+    <section class="content">
+      <section class="search-form">
+        <input type="text" placeholder="Search posts..." value="" id="query-search"/>
+        <span class="spacer">OR</span>
+        <a href="/posts/create">Create a post</a>
+      </section>
+
+      <h3 id="grid-title">{% if has_results %} Your search results: {% else %} Check out all these posts! {% endif %}</h3>
+      <section class="posts-grid" id="post-grid-view">
+        {% for post in results %}
+          <div class="post" id="{{ post.slug }}">
+            <span class="title">{{ post.title }}</span>
+            <span class="content">{{ post.content }}</span>
+          </div>
+        {% empty %}
+          <span>We don't have any posts... Why don't you add one?</span>
+        {% endfor %}
+      </section>
+    </section>
+  </main>
+{% endblock content %}
