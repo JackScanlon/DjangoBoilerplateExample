@@ -3,18 +3,14 @@ from pathlib import Path
 from datetime import timedelta
 from django.utils.translation import gettext_lazy as _
 
-def get_env_var(key, default=''):
-    val = os.environ.get(key, default)
-    return val.rstrip()
-
 # Build paths
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = get_env_var('SECRET_KEY', '')
+SECRET_KEY = os.environ.get('SECRET_KEY', '')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = bool(int(get_env_var('DEBUG', 0)))
+DEBUG = bool(int(os.environ.get('DEBUG', 0)))
 
 # CORS
 ALLOWED_HOSTS = ['localhost', 'localhost:8008', '127.0.0.1', '127.0.0.1:8008', 'nginx', 'nginx:8008', 'app']
@@ -90,12 +86,12 @@ WSGI_APPLICATION = 'app.wsgi.application'
 # Database
 DATABASES = {
     'default': {
-        'ENGINE': get_env_var('DB_ENGINE', ''),
-        'NAME': get_env_var('DB_NAME', ''),
-        'HOST': get_env_var('DB_HOST', ''),
-        'PORT': get_env_var('DB_PORT', ''),
-        'USER': get_env_var('DB_USER', ''),
-        'PASSWORD': get_env_var('DB_PASSWORD', ''),
+        'ENGINE': os.environ.get('DB_ENGINE', ''),
+        'NAME': os.environ.get('DB_NAME', ''),
+        'HOST': os.environ.get('DB_HOST', ''),
+        'PORT': os.environ.get('DB_PORT', ''),
+        'USER': os.environ.get('DB_USER', ''),
+        'PASSWORD': os.environ.get('DB_PASSWORD', ''),
     }
 }
 
@@ -118,7 +114,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 
 # Internationalisation
-LANGUAGE_CODE = get_env_var('BASE_LANG_CODE', 'en-gb')
+LANGUAGE_CODE = os.environ.get('BASE_LANG_CODE', 'en-gb')
 
 LANGUAGES = (
     ('en-gb', _('English')),
@@ -128,7 +124,7 @@ LOCALE_PATHS = [
     BASE_DIR / 'locale/',
 ]
 
-TIME_ZONE = get_env_var('BASE_TIME_ZONE', 'GMT')
+TIME_ZONE = os.environ.get('BASE_TIME_ZONE', 'GMT')
 
 USE_I18N = True
 
@@ -138,7 +134,7 @@ USE_TZ = True
 
 # Static files (SCSS, CSS, JavaScript)
 STATIC_URL = '/static/'
-STATIC_ROOT = os.path.join(BASE_DIR, get_env_var('STATICFILES', 'static'))
+STATIC_ROOT = os.path.join(BASE_DIR, os.environ.get('STATICFILES', 'static'))
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'shared/static'),
 ]
@@ -152,7 +148,7 @@ STATICFILES_FINDERS = [
 
 # Media (Images, videos)
 MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, get_env_var('MEDIAFILES', 'static'))
+MEDIA_ROOT = os.path.join(BASE_DIR, os.environ.get('MEDIAFILES', 'static'))
 MEDIAFILES_DIRS = [
     os.path.join(BASE_DIR, 'shared/media'),
 ]
@@ -160,16 +156,8 @@ MEDIAFILES_DIRS = [
 # Default primary key field type
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# Debug cache behaviour
-# if DEBUG:
-#     CACHES = {
-#         'default': {
-#             'BACKEND': 'django.core.cache.backends.dummy.DummyCache',
-#         }
-#     }
-
 # SCSS processor config
-SASS_PROCESSOR_ENABLED = bool(int(get_env_var('SASS_ENABLED', 1)))
+SASS_PROCESSOR_ENABLED = bool(int(os.environ.get('SASS_ENABLED', 1)))
 SASS_PROCESSOR_AUTO_INCLUDE = True
 SASS_PROCESSOR_INCLUDE_FILE_PATTERN = r'^.+\.scss$'
 SASS_OUTPUT_STYLE = 'compact'
@@ -223,8 +211,8 @@ ACCOUNT_EMAIL_CONFIRMATION_EXPIRE_DAYS = 3 # Verification emails expire after 3 
 
 # JWT
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=int(get_env_var('ACCESS_TOKEN_LIFETIME', 5))),
-    'REFRESH_TOKEN_LIFETIME': timedelta(days=int(get_env_var('REFRESH_TOKEN_LIFETIME', 1))),
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=int(os.environ.get('ACCESS_TOKEN_LIFETIME', 5))),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=int(os.environ.get('REFRESH_TOKEN_LIFETIME', 1))),
 }
 
 # ElasticSearch config
